@@ -245,7 +245,6 @@ namespace Image_Gallery_Demo
 
             SaveFileDialog s1 = new SaveFileDialog();
             s1.DefaultExt = "jpg";
-
             s1.Filter = "jpg files (*.jpg)|*.jpg";
             if (s1.ShowDialog() == DialogResult.OK)
             {
@@ -261,8 +260,11 @@ namespace Image_Gallery_Demo
                 foreach (var selectedimg in images)
                 {
                     string temp = fname;
-                    temp += count;
-                    selectedimg.Save(temp + ".jpg");
+                    if (count != 1)
+                    {
+                        temp += count;
+                    }
+                        selectedimg.Save(temp + ".jpg");
                     count++;
                 }
             }
