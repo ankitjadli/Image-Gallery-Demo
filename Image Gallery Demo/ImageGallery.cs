@@ -38,6 +38,8 @@ namespace Image_Gallery_Demo
         public C1.Win.C1Tile.Tile img1 = new Tile();
         public C1.Win.C1Tile.Tile img2 = new Tile();
 
+
+        //Instance of DataFechter class and a list of ImageItem class.
         DataFetcher datafetch1 = new DataFetcher();
         List<ImageItem> imagesList1 = new List<ImageItem>();
         int checkedItems = 0;
@@ -81,7 +83,7 @@ namespace Image_Gallery_Demo
                 this.panel1.Location = new System.Drawing.Point(477, 0);
                 this.panel1.Size = new System.Drawing.Size(287, 40);
                 this.panel1.Dock = DockStyle.Fill;
-                this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.tablecol2Paint);
+                this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.OnSearchPanelPaint);
                 this.panel1.Controls.Add(SearchBoxtxt);
 
                 this.SearchBoxtxt.Name = "_searchBox";
@@ -122,10 +124,10 @@ namespace Image_Gallery_Demo
                 this.ExporttoPdfIcon.Location = new System.Drawing.Point(0, 3);
                 this.ExporttoPdfIcon.Size = new System.Drawing.Size(100, 30);
                 this.ExporttoPdfIcon.SizeMode = PictureBoxSizeMode.StretchImage;
-                this.ExporttoPdfIcon.Click += new System.EventHandler(this.exportimg_Click);
+                this.ExporttoPdfIcon.Click += new System.EventHandler(this.OnExportClick);
                 this.ExporttoPdfIcon.Visible = false;
                 this.ExporttoPdfIcon.BorderStyle = BorderStyle.FixedSingle;
-                this.ExporttoPdfIcon.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox2Paint);
+                this.ExporttoPdfIcon.Paint += new System.Windows.Forms.PaintEventHandler(this.OnExportImagePaint);
 
                 this.DownloadImageIcon.Name = "_DownloadImage";
                 this.DownloadImageIcon.Image = global::Image_Gallery_Demo.Properties.Resources.downbad;
@@ -147,9 +149,9 @@ namespace Image_Gallery_Demo
                 this.tileControl1.SwipeDistance = 20;
                 this.tileControl1.SwipeRearrangeDistance = 98;
                 this.tileControl1.Groups.Add(this.group1);
-                this.tileControl1.TileChecked += new System.EventHandler<C1.Win.C1Tile.TileEventArgs>(this.tileChecked);
-                this.tileControl1.TileUnchecked += new System.EventHandler<C1.Win.C1Tile.TileEventArgs>(this.tileUnchecked);
-                this.tileControl1.Paint += new System.Windows.Forms.PaintEventHandler(this.tileControl1Paint);
+                this.tileControl1.TileChecked += new System.EventHandler<C1.Win.C1Tile.TileEventArgs>(this.OnTileChecked);
+                this.tileControl1.TileUnchecked += new System.EventHandler<C1.Win.C1Tile.TileEventArgs>(this.OnTileUnchecked);
+                this.tileControl1.Paint += new System.Windows.Forms.PaintEventHandler(this.OnTileControlPaint);
                 this.tileControl1.AllowChecking = true;
                 this.tileControl1.Orientation = LayoutOrientation.Vertical;
 
@@ -175,6 +177,7 @@ namespace Image_Gallery_Demo
             InitializeComponent();
         }
 
+        //To fetch the images using DataFetcher class.
         private async void searchimg_Click(object sender, EventArgs e)
         {
 
@@ -185,7 +188,7 @@ namespace Image_Gallery_Demo
             statusStrip1.Visible = false;
 
         }
-
+        //Loop through all the images and add it to the tile control
         private void AddTiles(List<ImageItem> imageList1)
         {
             tileControl1.Groups[0].Tiles.Clear();
@@ -196,6 +199,8 @@ namespace Image_Gallery_Demo
                 tile.HorizontalSize = 2;
                 tile.VerticalSize = 2;
                 tileControl1.Groups[0].Tiles.Add(tile);
+
+                //Converts the base64 encoding to the corresponding image using MemoryStream class.
                 Image img = Image.FromStream(new MemoryStream(imageitem.Base64));
                 Template tl = new Template();
                 ImageElement ie = new ImageElement();
@@ -207,8 +212,8 @@ namespace Image_Gallery_Demo
         }
 
 
-
-        private void exportimg_Click(object sender, EventArgs e)
+        //Callback for click event for export button.
+        private void OnExportClick(object sender, EventArgs e)
         {
             List<Image> images = new List<Image>();
             foreach (Tile tile in tileControl1.Groups[0].Tiles)
@@ -232,6 +237,7 @@ namespace Image_Gallery_Demo
 
         }
 
+        //Iterates through all the tiles, gets it’s image and save this list of images to disk with given ImageName and Location.
         private void DownloadImage_Click(object sender, EventArgs e)
         {
             List<Image> images = new List<Image>();
@@ -251,12 +257,16 @@ namespace Image_Gallery_Demo
                 int len;
                 string s = s1.FileName;
                 len = s.Length;
+
+                //Store Filename to String.
                 string fname = "";
                 for (int t = 0; t < len - 4; t++)
                 {
                     fname += s[t];
                 }
                 int count = 1;
+
+                //Give unique FileName if there are Multiple Images. 
                 foreach (var selectedimg in images)
                 {
                     string temp = fname;
@@ -271,6 +281,7 @@ namespace Image_Gallery_Demo
 
         }
 
+        //iterates through all the tiles, gets it’s image and convert this list of images to PDF.
         private void ConvertToPdf(List<Image> images)
         {
             RectangleF rect = pdfDocument1.PageRectangle;
@@ -283,12 +294,14 @@ namespace Image_Gallery_Demo
                 }
                 firstPage = false;
                 rect.Inflate(-72, -72);
+                // opens a SaveFileDialog to save the image.
                 pdfDocument1.DrawImage(selectedimg, rect);
             }
 
         }
-
-        public void tablecol2Paint(object sender, System.Windows.Forms.PaintEventArgs e)
+        
+        //To add a grey border to the search box.
+        public void OnSearchPanelPaint(object sender, System.Windows.Forms.PaintEventArgs e)
         {
             Rectangle r = SearchBoxtxt.Bounds;
             r.Inflate(3, 3);
@@ -296,11 +309,12 @@ namespace Image_Gallery_Demo
             e.Graphics.DrawRectangle(p, r);
         }
 
-        public void pictureBox2Paint(object sender, System.Windows.Forms.PaintEventArgs e)
+        //used for drawing a grey border for export to pdf button.
+        public void OnExportImagePaint(object sender, System.Windows.Forms.PaintEventArgs e)
         {
             Rectangle r = new Rectangle(ExporttoPdfIcon.Location.X, ExporttoPdfIcon.Location.Y, ExporttoPdfIcon.Width,
             ExporttoPdfIcon.Height);
-            r.X -= 0;
+            r.X -= 29;
             r.Y -= 3;
             r.Width--;
             r.Height--;
@@ -310,22 +324,24 @@ namespace Image_Gallery_Demo
             Point(this.Width, 43));
         }
 
-
-        private void tileChecked(object sender, C1.Win.C1Tile.TileEventArgs e)
+        //Change Visiblity of ExporttoPDF and DownloadImage Buttons and increment selected items.
+        private void OnTileChecked(object sender, C1.Win.C1Tile.TileEventArgs e)
         {
             checkedItems = checkedItems + 1;
             ExporttoPdfIcon.Visible = true;
             DownloadImageIcon.Visible = true;
         }
 
-        private void tileUnchecked(object sender, C1.Win.C1Tile.TileEventArgs e)
+        ////Change Visiblity of ExporttoPDF and DownloadImage Buttons and decrement selected items.
+        private void OnTileUnchecked(object sender, C1.Win.C1Tile.TileEventArgs e)
         {
             checkedItems = checkedItems - 1;
             ExporttoPdfIcon.Visible = (checkedItems > 0);
             DownloadImageIcon.Visible = (checkedItems > 0);
         }
 
-        private void tileControl1Paint(object sender, PaintEventArgs e)
+        //used to draw a separator
+        private void OnTileControlPaint(object sender, PaintEventArgs e)
         {
             Pen p = new Pen(Color.LightGray);
             e.Graphics.DrawLine(p, 0, 43, 800, 43);

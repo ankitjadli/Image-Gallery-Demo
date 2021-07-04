@@ -16,10 +16,11 @@ namespace Image_Gallery_Demo
             string readText = null;
             try
             {
-                var azure =
-               @"https://imagefetcher20200529182038.azurewebsites.net";
-                string url = azure + @"/api/fetch_images?query=" +
-               searchstring + "&max_count=10";
+                String url = @"
+                https://imagefetcherapi.azurewebsites.net/api/fetch_images?query=" +
+                searchstring + "&max_count=15";
+
+                //Fetches JSON data from server.    
                 using (HttpClient c = new HttpClient())
                 {
                     readText = await c.GetStringAsync(url);
@@ -34,13 +35,13 @@ namespace Image_Gallery_Demo
 
             return readText;
 
-        } // method to fetch json data
+        } 
 
         public async Task<List<ImageItem>> GetImageData(string search)
         {
             string data = await GetDatafromService(search);
             return JsonConvert.DeserializeObject<List<ImageItem>>(data);
-        } //method to convert json data 
+        }// parse the json data into an instance of ImageItem
 
     }
 }
