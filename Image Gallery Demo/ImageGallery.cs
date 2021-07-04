@@ -44,7 +44,7 @@ namespace Image_Gallery_Demo
 
         //Instance of DataFechter class and a list of ImageItem class.
         DataFetcher datafetch1 = new DataFetcher();
-        List<ImageItem> imagesList1 = new List<ImageItem>();
+        List<ImageItem> imagesList1;
         int checkedItems = 0;
 
         private void ImageGallery_Load(object sender, EventArgs e)
@@ -58,6 +58,7 @@ namespace Image_Gallery_Demo
                 this.MaximizeBox = false;
                 this.Size = new System.Drawing.Size(780, 800);
                 this.MaximumSize = new System.Drawing.Size(810, 810);
+                this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
                 this.ShowIcon = false;
                 this.Controls.Add(C1Split);
 
@@ -219,6 +220,7 @@ namespace Image_Gallery_Demo
 
                 //Converts the base64 encoding to the corresponding image using MemoryStream class.
                 Image img = Image.FromStream(new MemoryStream(imageitem.Base64));
+
                 Template tl = new Template();
                 ImageElement ie = new ImageElement();
                 ie.ImageLayout = ForeImageLayout.Stretch;
