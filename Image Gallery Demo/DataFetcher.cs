@@ -17,14 +17,7 @@ namespace Image_Gallery_Demo
             string readText = null;
             try
             {
-
-                /* Invalid URL String url = @"
-                https://imagefetcherapi.azurewebsites.net/api/fetch_images?query=" +
-                searchstring + "&max_count=5"*/
-
-               
-                string url = @"https://imagefetcher20200529182038.azurewebsites.net" + @"/api/fetch_images?query=" +
-               searchstring + "&max_count=10";
+                String url = @" https://imagefetcherapi.azurewebsites.net/api/fetch_images?query=" + searchstring + "&max_count=5";
                 using (HttpClient c = new HttpClient())
                 {
                     readText = await c.GetStringAsync(url);
